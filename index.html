@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2P73L29BH7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2P73L29BH7');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2026 연봉 실수령액 계산기 — 부양가족·비과세 반영 | 연봉계산소</title>
+<meta name="description" content="2026년 연봉 실수령액을 즉시 계산. 4대보험·간이세액표·부양가족·자녀·비과세 식대 반영. 연봉별 실수령액표와 역계산까지 무료." />
+<link rel="canonical" href="https://maestro24.github.io/salarylab/" />
+<meta property="og:title" content="2026 연봉 실수령액 계산기 — 부양가족·비과세 반영 | 연봉계산소" />
+<meta property="og:description" content="2026년 연봉 실수령액을 즉시 계산. 4대보험·간이세액표·부양가족·자녀·비과세 식대 반영. 연봉별 실수령액표와 역계산까지 무료." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://maestro24.github.io/salarylab/" />
+<meta property="og:locale" content="ko_KR" />
+<meta name="theme-color" content="#f7f8fc" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%236E7FF3'/><stop offset='1' stop-color='%233D4FD0'/></linearGradient></defs><rect width='100' height='100' rx='18' fill='url(%23g)'/><text x='50' y='66' font-size='44' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>₩</text><rect x='24' y='74' width='52' height='7' rx='3.5' fill='white' opacity='.85'/></svg>" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "연봉계산소", "url": "https://maestro24.github.io/salarylab/", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}, "description": "2026년 연봉 실수령액 계산기 — 4대보험·간이세액표 기준, 부양가족·비과세 반영"}</script>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+<header class="header">
+  <a class="brand" href="index.html">💰 연봉계산소</a>
+  <nav class="nav">
+    <a href="table/index.html">실수령액표</a>
+    <a href="negotiate/index.html">협상</a>
+    <a href="guide/index.html">가이드</a>
+  </nav>
+</header>
+<main class="main">
+<div>
+  <h1 class="page-title">2026 연봉 실수령액 계산기</h1>
+  <p class="page-desc">4대보험·간이세액표 기준. 부양가족·자녀·비과세 식대까지 반영한 진짜 월급.</p>
+</div>
+<div class="card">
+  <div class="calc-form">
+    <label>연봉 (만원)
+      <input type="number" id="in-annual" inputmode="numeric" value="4000" min="0" step="100" />
+    </label>
+    <label>부양가족 수 (본인 포함)
+      <select id="in-dep"><option value="1" selected>1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option></select>
+    </label>
+    <label>8~20세 자녀 수
+      <select id="in-child"><option value="0">0명</option><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option></select>
+    </label>
+  </div>
+  <label class="check-row"><input type="checkbox" id="in-meal" /> 비과세 식대 월 20만 원 포함</label>
+  <div class="net-hero">
+    <div class="label">월 실수령액</div>
+    <div class="value" id="out-net">-</div>
+    <div class="per" id="out-annual"></div>
+  </div>
+  <div class="deduct-bar" id="bar"></div>
+  <div class="bar-legend" id="bar-legend"></div>
+</div>
+<div class="card">
+  <h2 style="font-size:1rem;margin-bottom:10px">공제 내역</h2>
+  <table class="tbl"><tbody id="out-table"></tbody></table>
+</div>
+<div class="card">
+  <h2 style="font-size:1rem;margin-bottom:10px">바로가기</h2>
+  <div class="rel-grid"><a class="rel-link" href="salary/3000/index.html">연봉 3,000만</a><a class="rel-link" href="salary/4000/index.html">연봉 4,000만</a><a class="rel-link" href="salary/5000/index.html">연봉 5,000만</a><a class="rel-link" href="salary/6000/index.html">연봉 6,000만</a><a class="rel-link" href="salary/8000/index.html">연봉 8,000만</a><a class="rel-link" href="salary/10000/index.html">연봉 1억</a><a class="rel-link" href="reverse/250/index.html">월 250만 받으려면?</a><a class="rel-link" href="reverse/300/index.html">월 300만 받으려면?</a><a class="rel-link" href="reverse/400/index.html">월 400만 받으려면?</a></div>
+</div>
+</main>
+<aside class="promo" data-coupang>
+  <div class="coupang-wrap">
+    <a href="https://link.coupang.com/a/flCfhuxEJM" target="_blank" rel="sponsored noopener" referrerpolicy="unsafe-url"><img src="https://ads-partners.coupang.com/banners/1006097?trackingCode=AF8748009&subId=&traceId=V0-301-879dd1202e5c73b2-I1006097&w=728&h=90" alt="쿠팡 파트너스 배너" style="max-width:100%;height:auto" loading="lazy"></a>
+  </div>
+  <p class="promo-disclosure">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+</aside>
+<script>
+  setTimeout(function () {
+    document.querySelectorAll('[data-coupang]').forEach(function (el) {
+      var f = el.querySelector('iframe');
+      var m = el.querySelector('img');
+      var ok = (f && f.getBoundingClientRect().height >= 10) || (m && m.complete && m.naturalWidth > 0);
+      if (!ok) el.hidden = true;
+    });
+  }, 4000);
+</script>
+<section class="seo-content">
+<h2>실수령액은 어떻게 계산되나요?</h2>
+<p>월 급여에서 국민연금(4.5%), 건강보험과 장기요양보험, 고용보험(0.9%), 그리고 근로소득 간이세액표에 따른 소득세와 지방소득세(소득세의 10%)를 공제한 금액이 실수령액입니다. 부양가족이 많을수록 소득세가 줄고, 식대 등 비과세 수당은 공제 계산에서 제외되어 실수령액이 늘어납니다.</p>
+<h2>자주 묻는 질문</h2>
+<dl>
+<dt>계산 결과가 실제 월급과 왜 다른가요?</dt>
+<dd>회사의 비과세 수당 구성, 상여 지급 방식, 노조비 같은 회사별 공제 때문입니다. 본 계산기는 간이세액표 100% 기준 추정치이며, 연말정산에서 최종 정산됩니다.</dd>
+<dt>요율은 언제 기준인가요?</dt>
+<dd>2026년 고시 요율 기준이며 출처는 가이드 페이지에 정리되어 있습니다.</dd>
+</dl>
+</section>
+<footer class="footer">
+  <span>2026년 4대보험 요율·근로소득 간이세액표(부양가족 1인, 비과세 미적용) 기준 추정치입니다. 회사별 공제 항목·수당 구성에 따라 실제 금액과 다를 수 있으며, 세무 상담을 대신하지 않습니다.</span>
+  <a href="index.html">계산기</a>
+  <a href="table/index.html">실수령액표</a>
+  <a href="https://maestro24.github.io/stockcal/">주식달력</a>
+</footer>
+</div>
+<script type="module">
+import { initCalculator } from './js/app.js';
+initCalculator();
+</script>
+<div class="side-rail side-l" data-coupang>
+  <script src="https://ads-partners.coupang.com/g.js"></script>
+  <script>new PartnersCoupang.G({ id: 1006093, template: "carousel", trackingCode: "AF8748009", width: "160", height: "600", tsource: "" });</script>
+</div>
+<div class="side-rail side-r" data-coupang>
+  <script>new PartnersCoupang.G({ id: 1006093, template: "carousel", trackingCode: "AF8748009", width: "160", height: "600", tsource: "" });</script>
+</div>
+
+</body>
+</html>

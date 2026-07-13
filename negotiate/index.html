@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2P73L29BH7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2P73L29BH7');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>연봉 협상 시뮬레이터 — 인상률의 세후 가치 계산 | 연봉계산소</title>
+<meta name="description" content="연봉 5% 인상이면 월 실수령이 실제로 얼마나 늘까? 인상률→세후 증가분, 목표 증가분→필요 인상률 역계산까지 무료 시뮬레이터." />
+<link rel="canonical" href="https://maestro24.github.io/salarylab/negotiate/" />
+<meta property="og:title" content="연봉 협상 시뮬레이터 — 인상률의 세후 가치 계산 | 연봉계산소" />
+<meta property="og:description" content="연봉 5% 인상이면 월 실수령이 실제로 얼마나 늘까? 인상률→세후 증가분, 목표 증가분→필요 인상률 역계산까지 무료 시뮬레이터." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://maestro24.github.io/salarylab/negotiate/" />
+<meta property="og:locale" content="ko_KR" />
+<meta name="theme-color" content="#f7f8fc" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%236E7FF3'/><stop offset='1' stop-color='%233D4FD0'/></linearGradient></defs><rect width='100' height='100' rx='18' fill='url(%23g)'/><text x='50' y='66' font-size='44' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>₩</text><rect x='24' y='74' width='52' height='7' rx='3.5' fill='white' opacity='.85'/></svg>" />
+
+<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<div id="app">
+<header class="header">
+  <a class="brand" href="../index.html">💰 연봉계산소</a>
+  <nav class="nav">
+    <a href="../table/index.html">실수령액표</a>
+    <a href="../negotiate/index.html">협상</a>
+    <a href="../guide/index.html">가이드</a>
+  </nav>
+</header>
+<main class="main">
+<nav class="crumb"><a href="../index.html">계산기</a> › 연봉 협상 시뮬레이터</nav>
+<div>
+  <h1 class="page-title">연봉 협상 시뮬레이터</h1>
+  <p class="page-desc">"5% 올리면 통장에 실제로 얼마 더 들어올까?" — 인상률의 세후 가치를 확인하세요.</p>
+</div>
+<div class="card">
+  <div class="calc-form">
+    <label>현재 연봉 (만원)
+      <input type="number" id="n-current" inputmode="numeric" value="4000" min="0" step="100" />
+    </label>
+    <label>인상률 (%)
+      <input type="number" id="n-rate" inputmode="decimal" value="5" min="0" max="100" step="0.5" />
+    </label>
+  </div>
+  <div class="net-hero">
+    <div class="label">월 실수령 증가분</div>
+    <div class="value" id="n-delta">-</div>
+    <div class="per" id="n-detail"></div>
+  </div>
+  <table class="tbl"><tbody id="n-table"></tbody></table>
+</div>
+<div class="card">
+  <h2 style="font-size:1rem;margin-bottom:10px">거꾸로: 월 실수령을 늘리려면</h2>
+  <div class="calc-form">
+    <label>목표 월 증가분 (만원)
+      <input type="number" id="n-goal" inputmode="numeric" value="20" min="1" step="5" />
+    </label>
+  </div>
+  <p style="font-size:0.95rem;margin-top:10px" id="n-reverse">-</p>
+</div>
+<div class="card">
+  <div class="rel-grid">
+    <a class="rel-link" href="../salary/4000/index.html">연봉 4,000만 상세</a>
+    <a class="rel-link" href="../salary/5000/index.html">연봉 5,000만 상세</a>
+    <a class="rel-link" href="../salary/6000/index.html">연봉 6,000만 상세</a>
+  </div>
+</div>
+</main>
+<aside class="promo" data-coupang>
+  <div class="coupang-wrap">
+    <a href="https://link.coupang.com/a/flCfhuxEJM" target="_blank" rel="sponsored noopener" referrerpolicy="unsafe-url"><img src="https://ads-partners.coupang.com/banners/1006097?trackingCode=AF8748009&subId=&traceId=V0-301-879dd1202e5c73b2-I1006097&w=728&h=90" alt="쿠팡 파트너스 배너" style="max-width:100%;height:auto" loading="lazy"></a>
+  </div>
+  <p class="promo-disclosure">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+</aside>
+<script>
+  setTimeout(function () {
+    document.querySelectorAll('[data-coupang]').forEach(function (el) {
+      var f = el.querySelector('iframe');
+      var m = el.querySelector('img');
+      var ok = (f && f.getBoundingClientRect().height >= 10) || (m && m.complete && m.naturalWidth > 0);
+      if (!ok) el.hidden = true;
+    });
+  }, 4000);
+</script>
+<section class="seo-content">
+<h2>연봉 인상분은 왜 생각보다 적게 들어오나요?</h2>
+<p>인상분에는 4대보험과 소득세가 함께 붙습니다. 특히 과세표준 구간이 올라가면 인상분에 적용되는 한계세율이 높아져, 세전 인상률보다 세후 증가율이 낮아지는 것이 정상입니다. 협상 때는 세전 금액이 아니라 "월 실수령 기준으로 얼마가 늘어나는가"를 확인하고 목표를 세우는 것이 유리합니다.</p>
+</section>
+<footer class="footer">
+  <span>2026년 4대보험 요율·근로소득 간이세액표(부양가족 1인, 비과세 미적용) 기준 추정치입니다. 회사별 공제 항목·수당 구성에 따라 실제 금액과 다를 수 있으며, 세무 상담을 대신하지 않습니다.</span>
+  <a href="../index.html">계산기</a>
+  <a href="../table/index.html">실수령액표</a>
+  <a href="https://maestro24.github.io/stockcal/">주식달력</a>
+</footer>
+</div>
+<script type="module">
+import { initNegotiate } from '../js/app.js';
+initNegotiate();
+</script>
+<div class="side-rail side-l" data-coupang>
+  <script src="https://ads-partners.coupang.com/g.js"></script>
+  <script>new PartnersCoupang.G({ id: 1006093, template: "carousel", trackingCode: "AF8748009", width: "160", height: "600", tsource: "" });</script>
+</div>
+<div class="side-rail side-r" data-coupang>
+  <script>new PartnersCoupang.G({ id: 1006093, template: "carousel", trackingCode: "AF8748009", width: "160", height: "600", tsource: "" });</script>
+</div>
+
+</body>
+</html>

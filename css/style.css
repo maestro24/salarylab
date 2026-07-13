@@ -1,0 +1,151 @@
+/* 연봉계산소 — 디자인 시스템 (라이트 전용) */
+:root {
+  --bg: #f7f8fc;
+  --bg-card: #ffffff;
+  --bg-elev: #eef0f8;
+  --text: #171a24;
+  --text-dim: #5f6678;
+  --border: #dde1ee;
+  --accent: #5b6ee8;
+  --accent-deep: #3d4fd0;
+  --plus: #34c179;
+  --minus: #e5604f;
+  --radius: 14px;
+  --shadow: rgba(30, 40, 90, 0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.55;
+}
+#app { max-width: 720px; margin: 0 auto; padding: 0 16px; min-height: 100dvh; display: flex; flex-direction: column; }
+button, input, select { font-family: inherit; }
+a { color: var(--accent); text-decoration: none; }
+
+/* ── 헤더 ── */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.12rem; color: var(--text); }
+.nav { display: flex; gap: 2px; }
+.nav a { color: var(--text-dim); font-weight: 700; font-size: 0.9rem; padding: 7px 11px; border-radius: 8px; }
+.nav a:hover, .nav a.active { background: var(--bg-elev); color: var(--text); }
+
+/* ── 메인 ── */
+.main { flex: 1; padding: 18px 0 30px; display: flex; flex-direction: column; gap: 16px; }
+.main > * { animation: sec-in 0.3s ease backwards; }
+.main > *:nth-child(2) { animation-delay: 0.06s; }
+.main > *:nth-child(3) { animation-delay: 0.12s; }
+@keyframes sec-in { from { opacity: 0; transform: translateY(8px); } }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+h1.page-title { font-size: 1.3rem; font-weight: 900; line-height: 1.35; }
+.page-desc { color: var(--text-dim); font-size: 0.9rem; margin-top: 4px; }
+.crumb { font-size: 0.8rem; color: var(--text-dim); display: flex; gap: 6px; flex-wrap: wrap; }
+.crumb a { color: var(--text-dim); font-weight: 700; }
+.crumb a:hover { color: var(--accent); }
+
+/* ── 즉답 박스 ── */
+.answer {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--bg-card)), var(--bg-card));
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  text-align: center;
+}
+.answer .eq { font-size: 1.55rem; font-weight: 900; letter-spacing: -0.01em; }
+.answer .eq b { color: var(--accent-deep); }
+.answer .sub { color: var(--text-dim); font-size: 0.85rem; margin-top: 6px; }
+
+/* ── 계산기 폼 ── */
+.calc-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.calc-form label { font-size: 0.78rem; font-weight: 800; color: var(--text-dim); display: flex; flex-direction: column; gap: 6px; }
+.calc-form input, .calc-form select {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 11px 13px;
+  width: 100%;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s;
+}
+.calc-form input:focus, .calc-form select:focus { border-color: var(--accent); }
+.check-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; margin-top: 10px; cursor: pointer; user-select: none; }
+.check-row input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+/* ── 결과 대시보드 ── */
+.net-hero { text-align: center; padding: 18px 0 8px; }
+.net-hero .label { font-size: 0.8rem; color: var(--text-dim); font-weight: 700; }
+.net-hero .value { font-size: 2.3rem; font-weight: 900; color: var(--accent-deep); font-variant-numeric: tabular-nums; }
+.net-hero .per { font-size: 1rem; color: var(--text-dim); font-weight: 700; }
+
+/* ── 공제 분해 표 ── */
+.tbl { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tbl th, .tbl td { padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+.tbl th { color: var(--text-dim); font-size: 0.78rem; text-align: left; }
+.tbl td:last-child, .tbl th:last-child { text-align: right; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--bg-elev); }
+.tbl td a { font-weight: 800; }
+.tbl .hl td { background: color-mix(in srgb, var(--accent) 10%, transparent); font-weight: 800; }
+.tbl .minus { color: var(--minus); }
+.tbl .total td { font-weight: 900; border-top: 2px solid var(--border); }
+
+/* 공제 바 시각화 */
+.deduct-bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; margin: 10px 0 6px; }
+.deduct-bar span { display: block; }
+.bar-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 0.72rem; color: var(--text-dim); }
+.bar-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+
+/* ── 관련 링크 ── */
+.rel-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.rel-link {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.85rem; font-weight: 700;
+  padding: 8px 14px;
+  transition: border-color 0.15s;
+}
+.rel-link:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── SEO 텍스트/푸터 ── */
+.seo-content { border-top: 1px solid var(--border); padding: 22px 0 8px; }
+.seo-content h2 { font-size: 1rem; margin: 16px 0 8px; }
+.seo-content p, .seo-content li, .seo-content dd { font-size: 0.88rem; color: var(--text-dim); }
+.seo-content dt { font-weight: 800; font-size: 0.9rem; margin-top: 10px; color: var(--text); }
+.seo-content ol, .seo-content ul { padding-left: 20px; }
+.footer { border-top: 1px solid var(--border); padding: 14px 0 24px; font-size: 0.78rem; color: var(--text-dim); display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.footer a { color: var(--text-dim); font-weight: 700; }
+.footer a:hover { color: var(--accent); }
+
+/* ── 쿠팡 슬롯 (공통 체계) ── */
+.promo { margin: 16px 0; text-align: center; }
+.coupang-wrap { display: flex; justify-content: center; margin: 8px 0; min-height: 90px; max-width: 100%; overflow-x: hidden; }
+.promo-disclosure { font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; line-height: 1.5; text-align: center; }
+[hidden] { display: none !important; }
+.side-rail { position: fixed; top: 90px; width: 160px; display: none; z-index: 5; }
+@media (min-width: 1120px) { .side-rail { display: block; } }
+.side-l { left: calc(50% - 544px); }
+.side-r { left: calc(50% + 384px); }
+
+@media (max-width: 480px) {
+  .answer .eq { font-size: 1.2rem; }
+  .net-hero .value { font-size: 1.8rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

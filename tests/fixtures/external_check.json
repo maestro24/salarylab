@@ -1,0 +1,49 @@
+{
+  "description": "외부 공개 '2026 연봉 실수령액표' 교차 검증 fixture. 엔진(monthlyNet)과 비교, 허용 오차 ±3,000원.",
+  "assumptionsNote": "전 지점 공통: 부양가족 1인(본인), 8~20세 자녀 0명, 비과세 미적용(식대 0원). 각 소스의 가정은 sources[].assumptions 참조.",
+  "collectedAt": "2026-07-13",
+  "tolerance": 3000,
+  "sources": {
+    "calculate": {
+      "name": "근로 계산기 — 2026 연봉 실수령액 표 (calculate.co.kr)",
+      "url": "https://work.calculate.co.kr/actual-annual-salary-table",
+      "assumptions": { "dependents": 1, "children": 0, "mealAllowance": 0 },
+      "note": "2026.7~ 국민연금 상한(659만)·간이세액표 2026.2.27 개정 반영 확인. 공제 항목별 대조 결과 국민연금·건강보험·소득세·지방소득세 전 지점 완전 일치, 고용보험·장기요양만 10원 절사 방식 차이(±10원). HTML 표를 2026-07-13 직접 파싱하여 수집."
+    },
+    "chwidonam": {
+      "name": "취돔남 — 2026년 연봉별 월 실수령액 (Threads 공개 게시물)",
+      "url": "https://www.threads.com/@chwidonam_official/post/DQQLp4ZD75O/",
+      "assumptions": { "dependents": 1, "children": 0, "mealAllowance": 0 },
+      "note": "2026년 4대보험 인상분 반영 기준 명시. 10원 미만 절사 미적용 계산기로 추정되어 전 지점 +240~+530원의 일관된 편차."
+    }
+  },
+  "points": [
+    { "annual": 24000000, "values": { "calculate": 1784190 } },
+    { "annual": 25000000, "values": { "chwidonam": 1856863 } },
+    { "annual": 26000000, "values": { "calculate": 1929018 } },
+    { "annual": 28000000, "values": { "calculate": 2073463 } },
+    { "annual": 30000000, "values": { "calculate": 2217920, "chwidonam": 2218210 } },
+    { "annual": 32000000, "values": { "calculate": 2358258 } },
+    { "annual": 34000000, "values": { "calculate": 2492723 } },
+    { "annual": 36000000, "values": { "calculate": 2626701, "chwidonam": 2627060 } },
+    { "annual": 38000000, "values": { "calculate": 2762128, "chwidonam": 2762497 } },
+    { "annual": 40000000, "values": { "calculate": 2893703, "chwidonam": 2894093 } },
+    { "annual": 42000000, "values": { "chwidonam": 3020380 } },
+    { "annual": 44000000, "values": { "chwidonam": 3149367 } },
+    { "annual": 45000000, "values": { "calculate": 3213400 } },
+    { "annual": 46000000, "values": { "chwidonam": 3272183 } },
+    { "annual": 48000000, "values": { "chwidonam": 3396230 } },
+    { "annual": 50000000, "values": { "calculate": 3522738, "chwidonam": 3523237 } },
+    { "annual": 52000000, "values": { "chwidonam": 3650233 } },
+    { "annual": 54000000, "values": { "chwidonam": 3774140 } },
+    { "annual": 55000000, "values": { "calculate": 3833754 } },
+    { "annual": 60000000, "values": { "calculate": 4145130 } },
+    { "annual": 65000000, "values": { "calculate": 4459607 } },
+    { "annual": 70000000, "values": { "calculate": 4770994 } },
+    { "annual": 80000000, "values": { "calculate": 5301357 } },
+    { "annual": 90000000, "values": { "calculate": 5883730 } },
+    { "annual": 100000000, "values": { "calculate": 6471094 } },
+    { "annual": 120000000, "values": { "calculate": 7532110 } },
+    { "annual": 150000000, "values": { "calculate": 8937181 } }
+  ]
+}
