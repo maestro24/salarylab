@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import sys
+from datetime import date
 
 sys.path.insert(0, os.path.dirname(__file__))
 import salary  # noqa: E402
@@ -584,10 +585,11 @@ def build_guide(site):
 
 
 def build_sitemap(site):
+    today = date.today().isoformat()
     urls = []
     for path in sorted(site.pages):
         loc = SITE_URL + "/" if path == "index.html" else SITE_URL + "/" + path.replace("index.html", "")
-        urls.append(f"<url><loc>{loc}</loc></url>")
+        urls.append(f"<url><loc>{loc}</loc><lastmod>{today}</lastmod></url>")
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "\n".join(urls) + "\n</urlset>\n")
