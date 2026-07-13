@@ -18,6 +18,7 @@ import salary  # noqa: E402
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 SITE_URL = "https://maestro24.github.io/salarylab"
+OG_IMAGE = "https://maestro24.github.io/salarylab/assets/og-image.png"
 MAX_PAGES = 300
 YEAR = 2026
 
@@ -84,6 +85,11 @@ def shell(*, title, desc, canonical, depth, body, jsonld=None, seo_html="", rail
 <meta property="og:type" content="website" />
 <meta property="og:url" content="{canonical}" />
 <meta property="og:locale" content="ko_KR" />
+<meta property="og:image" content="{OG_IMAGE}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{title}" />
+<meta name="twitter:description" content="{desc}" />
+<meta name="twitter:image" content="{OG_IMAGE}" />
 <meta name="theme-color" content="#f7f8fc" />
 <link rel="icon" href="{FAVICON}" />
 {ld}
@@ -150,6 +156,17 @@ def mw(manwon):  # 만원 → 원
     return manwon * 10000
 
 
+def breadcrumb_ld(items):
+    """items: [(name, url_or_None), ...] → BreadcrumbList JSON-LD dict."""
+    elems = []
+    for i, (name, url) in enumerate(items, start=1):
+        el = {"@type": "ListItem", "position": i, "name": name}
+        if url:
+            el["item"] = url
+        elems.append(el)
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": elems}
+
+
 def breakdown_rows(r, hl=None):
     items = [
         ("월 세전 급여", r["monthlyGross"], ""),
@@ -210,7 +227,7 @@ def build_salary_page(site, m):
 
     body = f"""<nav class="crumb"><a href="../../index.html">계산기</a> › <a href="../../table/index.html">실수령액표</a> › 연봉 {label}</nav>
 <div class="answer">
-  <div class="eq">연봉 {label} 실수령액 <b>월 {salary.fmt_krw(r["monthlyNet"])}원</b></div>
+  <h1 class="eq">연봉 {label} 실수령액 <b>월 {salary.fmt_krw(r["monthlyNet"])}원</b></h1>
   <div class="sub">{YEAR}년 기준 · 연 실수령 {salary.fmt_krw(r["annualNet"])}원 · 부양가족 1인 기준</div>
 </div>
 <div class="card">
@@ -234,10 +251,15 @@ def build_salary_page(site, m):
 <p>세전 월급 {salary.fmt_krw(r["monthlyGross"])}원에서 국민연금·건강보험(장기요양 포함)·고용보험으로 {salary.fmt_krw(r['pension'] + r['health'] + r['care'] + r['employment'])}원, 소득세와 지방소득세로 {salary.fmt_krw(r['incomeTax'] + r['localTax'])}원이 공제됩니다. 부양가족 수가 늘거나 비과세 식대(월 20만 원)를 적용하면 실수령액이 늘어납니다 — 위 계산기에서 조건을 바꿔 확인하세요.</p>
 </section>"""
 
+    bc = breadcrumb_ld([
+        ("연봉 실수령액 계산기", f"{SITE_URL}/"),
+        ("실수령액표", f"{SITE_URL}/table/"),
+        (f"연봉 {label}", canonical),
+    ])
     site.emit(path, shell(
         title=f"연봉 {label} 실수령액 — 월 {salary.fmt_krw(r['monthlyNet'])}원 ({YEAR}년) | 연봉계산소",
         desc=f"{YEAR}년 연봉 {label} 원의 월 실수령액은 {salary.fmt_krw(r['monthlyNet'])}원입니다. 4대보험·소득세 공제 내역 분해와 근처 연봉 비교표 제공.",
-        canonical=canonical, depth=2, body=body, jsonld=faq, seo_html=seo,
+        canonical=canonical, depth=2, body=body, jsonld=[faq, bc], seo_html=seo,
     ))
 
 
@@ -273,7 +295,7 @@ def build_reverse_page(site, t):
 
     body = f"""<nav class="crumb"><a href="../../index.html">계산기</a> › 역계산 › 월 {t}만 원</nav>
 <div class="answer">
-  <div class="eq">월 실수령 {t}만 원 → 연봉 <b>약 {salary.fmt_manwon(round(annual, -5))}</b></div>
+  <h1 class="eq">월 실수령 {t}만 원 → 연봉 <b>약 {salary.fmt_manwon(round(annual, -5))}</b></h1>
   <div class="sub">{YEAR}년 기준 · 세전 월급 약 {salary.fmt_krw(r["monthlyGross"])}원 (부양가족 1인)</div>
 </div>
 <div class="card">
@@ -291,10 +313,24 @@ def build_reverse_page(site, t):
   </div>
 </div>"""
 
+    need_label = salary.fmt_manwon(round(annual, -5))
+    rfaq = {
+        "@context": "https://schema.org", "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": f"월 실수령 {t}만 원을 받으려면 연봉이 얼마여야 하나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": f"{YEAR}년 기준(부양가족 1인, 비과세 미적용) 월 실수령액 {t}만 원을 받으려면 연봉 약 {need_label} 원이 필요합니다. 이때 세전 월급은 약 {salary.fmt_krw(r['monthlyGross'])}원입니다."}},
+            {"@type": "Question", "name": "실제 필요한 연봉이 이보다 높을 수도 있나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "회사별 비과세 수당 구성, 부양가족 수, 상여 지급 방식에 따라 달라집니다. 본 계산은 간이세액표 100% 기준 추정치이므로 실제 협상 시 참고값으로 활용하세요."}},
+        ],
+    }
+    bc = breadcrumb_ld([
+        ("연봉 실수령액 계산기", f"{SITE_URL}/"),
+        (f"월 실수령 {t}만 원", canonical),
+    ])
     site.emit(path, shell(
         title=f"월 실수령 {t}만 원 받으려면 연봉 얼마? ({YEAR}년) | 연봉계산소",
-        desc=f"월 실수령액 {t}만 원을 받으려면 {YEAR}년 기준 연봉 약 {salary.fmt_manwon(round(annual, -5))} 원이 필요합니다. 공제 내역과 목표별 필요 연봉표 제공.",
-        canonical=canonical, depth=2, body=body,
+        desc=f"월 실수령액 {t}만 원을 받으려면 {YEAR}년 기준 연봉 약 {need_label} 원이 필요합니다. 공제 내역과 목표별 필요 연봉표 제공.",
+        canonical=canonical, depth=2, body=body, jsonld=[rfaq, bc],
     ))
 
 
@@ -318,10 +354,23 @@ def build_table_page(site):
   <table class="tbl"><thead><tr><th>연봉</th><th>월 세전</th><th>월 실수령</th></tr></thead><tbody>{''.join(rows)}</tbody></table>
 </div>"""
 
+    tfaq = {
+        "@context": "https://schema.org", "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": f"{YEAR}년 연봉 실수령액표는 어떤 기준인가요?",
+             "acceptedAnswer": {"@type": "Answer", "text": f"{YEAR}년 4대보험 요율과 근로소득 간이세액표(부양가족 1인, 비과세 미적용, 간이세액 100%)를 기준으로 산정한 추정치입니다. 회사별 공제 항목과 수당 구성에 따라 실제 금액과 차이가 날 수 있습니다."}},
+            {"@type": "Question", "name": "표에서 원하는 연봉을 누르면 무엇을 볼 수 있나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "각 연봉을 누르면 국민연금·건강보험·장기요양·고용보험·소득세·지방소득세로 나눈 월별 공제 분해와 근처 연봉 비교표를 볼 수 있습니다."}},
+        ],
+    }
+    bc = breadcrumb_ld([
+        ("연봉 실수령액 계산기", f"{SITE_URL}/"),
+        (f"{YEAR} 실수령액표", f"{SITE_URL}/table/"),
+    ])
     site.emit(path, shell(
         title=f"{YEAR}년 연봉 실수령액표 (2,000만~1억 2천만) | 연봉계산소",
         desc=f"{YEAR}년 4대보험·간이세액표 반영 연봉 실수령액표. 연봉 100만 원 단위로 월 세전·실수령액을 한眼에.",
-        canonical=f"{SITE_URL}/table/", depth=1, body=body, rails=True,
+        canonical=f"{SITE_URL}/table/", depth=1, body=body, rails=True, jsonld=[tfaq, bc],
     ))
 
 
@@ -453,10 +502,27 @@ def build_negotiate(site):
 <p>인상분에는 4대보험과 소득세가 함께 붙습니다. 특히 과세표준 구간이 올라가면 인상분에 적용되는 한계세율이 높아져, 세전 인상률보다 세후 증가율이 낮아지는 것이 정상입니다. 협상 때는 세전 금액이 아니라 "월 실수령 기준으로 얼마가 늘어나는가"를 확인하고 목표를 세우는 것이 유리합니다.</p>
 </section>"""
 
+    howto = {
+        "@context": "https://schema.org", "@type": "HowTo",
+        "name": "연봉 인상률의 세후 실수령 가치 계산하기",
+        "description": "연봉 인상률이 월 실수령액을 실제로 얼마나 늘리는지 계산하는 방법.",
+        "step": [
+            {"@type": "HowToStep", "position": 1, "name": "현재 연봉 입력",
+             "text": "현재 연봉(만원 단위)을 입력합니다."},
+            {"@type": "HowToStep", "position": 2, "name": "인상률 입력",
+             "text": "협상하려는 인상률(%)을 입력합니다."},
+            {"@type": "HowToStep", "position": 3, "name": "세후 증가분 확인",
+             "text": "4대보험·소득세를 반영한 월 실수령 증가분을 확인합니다. 목표 증가분을 입력해 필요한 인상률을 역으로 계산할 수도 있습니다."},
+        ],
+    }
+    bc = breadcrumb_ld([
+        ("연봉 실수령액 계산기", f"{SITE_URL}/"),
+        ("연봉 협상 시뮬레이터", f"{SITE_URL}/negotiate/"),
+    ])
     site.emit(path, shell(
         title="연봉 협상 시뮬레이터 — 인상률의 세후 가치 계산 | 연봉계산소",
         desc="연봉 5% 인상이면 월 실수령이 실제로 얼마나 늘까? 인상률→세후 증가분, 목표 증가분→필요 인상률 역계산까지 무료 시뮬레이터.",
-        canonical=f"{SITE_URL}/negotiate/", depth=1, body=body, seo_html=seo, rails=True,
+        canonical=f"{SITE_URL}/negotiate/", depth=1, body=body, seo_html=seo, rails=True, jsonld=[howto, bc],
         extra_script="""<script type="module">
 import { initNegotiate } from '../js/app.js';
 initNegotiate();
@@ -495,10 +561,25 @@ def build_guide(site):
 <p style="margin-top:14px">직접 확인: <a href="../salary/3000/index.html">연봉 3,000만</a> · <a href="../salary/5000/index.html">5,000만</a> · <a href="../salary/8000/index.html">8,000만</a> 공제 분해</p>
 </div>"""
 
+    gfaq = {
+        "@context": "https://schema.org", "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": "월급에서 빠지는 4대보험은 무엇인가요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "국민연금(월 급여의 4.5%), 건강보험과 장기요양보험, 고용보험(0.9%)이 4대보험입니다. 회사와 근로자가 나눠 부담하며, 근로자 부담분이 매월 급여에서 공제됩니다."}},
+            {"@type": "Question", "name": "실수령액을 합법적으로 늘리는 방법이 있나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "비과세 식대(월 20만 원) 포함, 소득 요건을 충족하는 부양가족 등록, 연말정산 공제 항목 챙기기 등으로 세금 부담을 줄여 실수령액을 늘릴 수 있습니다."}},
+            {"@type": "Question", "name": "지방소득세는 얼마인가요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "지방소득세는 소득세의 10%가 자동으로 붙습니다."}},
+        ],
+    }
+    bc = breadcrumb_ld([
+        ("연봉 실수령액 계산기", f"{SITE_URL}/"),
+        ("공제 항목 가이드", f"{SITE_URL}/guide/"),
+    ])
     site.emit(path, shell(
         title=f"{YEAR} 4대보험 요율·소득세 공제 완전 해설 | 연봉계산소",
         desc=f"국민연금 4.5%, 건강보험, 고용보험 0.9%, 간이세액표 — {YEAR}년 월급 공제 항목을 전부 해설하고 실수령액 늘리는 방법까지.",
-        canonical=f"{SITE_URL}/guide/", depth=1, body=body, rails=True,
+        canonical=f"{SITE_URL}/guide/", depth=1, body=body, rails=True, jsonld=[gfaq, bc],
     ))
 
 
