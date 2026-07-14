@@ -221,6 +221,8 @@ def build_salary_page(site, m):
         "mainEntity": [
             {"@type": "Question", "name": f"연봉 {label} 실수령액은 얼마인가요?",
              "acceptedAnswer": {"@type": "Answer", "text": f"{YEAR}년 기준 연봉 {label} 원의 월 실수령액은 약 {salary.fmt_krw(r['monthlyNet'])}원입니다 (부양가족 1인, 비과세 미적용). 4대보험 {salary.fmt_krw(r['pension'] + r['health'] + r['care'] + r['employment'])}원과 세금 {salary.fmt_krw(r['incomeTax'] + r['localTax'])}원이 매월 공제됩니다."}},
+            {"@type": "Question", "name": f"연봉 {label}은 4대보험으로 매달 얼마를 떼나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": f"연봉 {label} 원 기준으로 매달 국민연금·건강보험·장기요양·고용보험으로 약 {salary.fmt_krw(r['pension'] + r['health'] + r['care'] + r['employment'])}원, 소득세·지방소득세로 약 {salary.fmt_krw(r['incomeTax'] + r['localTax'])}원이 공제되어 세후 월급이 결정됩니다."}},
             {"@type": "Question", "name": "실수령액이 회사마다 다른 이유는?",
              "acceptedAnswer": {"@type": "Answer", "text": "비과세 수당(식대·차량유지비 등) 구성, 부양가족 수, 회사의 공제 항목(노조비·사우회비 등)에 따라 달라집니다. 본 계산은 간이세액표 100% 기준 추정치입니다."}},
         ],
@@ -250,6 +252,8 @@ def build_salary_page(site, m):
     seo = f"""<section class="seo-content">
 <h2>연봉 {label}, 왜 월 {salary.fmt_krw(r["monthlyNet"])}원인가요?</h2>
 <p>세전 월급 {salary.fmt_krw(r["monthlyGross"])}원에서 국민연금·건강보험(장기요양 포함)·고용보험으로 {salary.fmt_krw(r['pension'] + r['health'] + r['care'] + r['employment'])}원, 소득세와 지방소득세로 {salary.fmt_krw(r['incomeTax'] + r['localTax'])}원이 공제됩니다. 부양가족 수가 늘거나 비과세 식대(월 20만 원)를 적용하면 실수령액이 늘어납니다 — 위 계산기에서 조건을 바꿔 확인하세요.</p>
+<h2>연봉 {label} 월급 실수령액 요약</h2>
+<p>연봉 {label} 원을 12개월로 나눈 세전 월급은 {salary.fmt_krw(r["monthlyGross"])}원이고, 여기서 4대보험과 세금을 뺀 세후 월급(실수령액)은 {salary.fmt_krw(r["monthlyNet"])}원, 연 실수령액은 {salary.fmt_krw(r["annualNet"])}원입니다. 같은 연봉이라도 부양가족 수와 비과세 식대 적용 여부에 따라 실수령 월급이 달라지므로, 내 조건으로 계산해 보는 것이 정확합니다.</p>
 </section>"""
 
     bc = breadcrumb_ld([
@@ -259,7 +263,7 @@ def build_salary_page(site, m):
     ])
     site.emit(path, shell(
         title=f"연봉 {label} 실수령액 — 월 {salary.fmt_krw(r['monthlyNet'])}원 ({YEAR}년) | 연봉계산소",
-        desc=f"{YEAR}년 연봉 {label} 원의 월 실수령액은 {salary.fmt_krw(r['monthlyNet'])}원입니다. 4대보험·소득세 공제 내역 분해와 근처 연봉 비교표 제공.",
+        desc=f"{YEAR}년 연봉 {label} 원의 월 실수령액(세후 월급)은 {salary.fmt_krw(r['monthlyNet'])}원입니다. 4대보험·소득세 공제 내역 분해와 근처 연봉 비교표로 실수령 월급을 한눈에.",
         canonical=canonical, depth=2, body=body, jsonld=[faq, bc], seo_html=seo,
     ))
 
@@ -315,6 +319,10 @@ def build_reverse_page(site, t):
 </div>"""
 
     need_label = salary.fmt_manwon(round(annual, -5))
+    seo = f"""<section class="seo-content">
+<h2>월 실수령 {t}만 원, 세전 월급과 연봉은?</h2>
+<p>매달 통장에 찍히는 세후 월급이 {t}만 원이 되려면 {YEAR}년 기준(부양가족 1인, 비과세 미적용) 세전 월급이 약 {salary.fmt_krw(r["monthlyGross"])}원, 연봉으로는 약 {need_label} 원이 필요합니다. 세전 월급에서 4대보험과 소득세·지방소득세가 빠지기 때문에, 목표 실수령 월급보다 세전 연봉은 더 높게 잡아야 합니다. 비과세 식대나 부양가족을 반영하면 필요한 연봉이 조금 낮아질 수 있습니다.</p>
+</section>"""
     rfaq = {
         "@context": "https://schema.org", "@type": "FAQPage",
         "mainEntity": [
@@ -330,8 +338,8 @@ def build_reverse_page(site, t):
     ])
     site.emit(path, shell(
         title=f"월 실수령 {t}만 원 받으려면 연봉 얼마? ({YEAR}년) | 연봉계산소",
-        desc=f"월 실수령액 {t}만 원을 받으려면 {YEAR}년 기준 연봉 약 {need_label} 원이 필요합니다. 공제 내역과 목표별 필요 연봉표 제공.",
-        canonical=canonical, depth=2, body=body, jsonld=[rfaq, bc],
+        desc=f"월 실수령액(세후 월급) {t}만 원을 받으려면 {YEAR}년 기준 연봉 약 {need_label} 원이 필요합니다. 세전 월급·공제 내역과 목표별 필요 연봉표 제공.",
+        canonical=canonical, depth=2, body=body, jsonld=[rfaq, bc], seo_html=seo,
     ))
 
 
@@ -427,25 +435,50 @@ def build_index(site):
 </div>"""
 
     seo = f"""<section class="seo-content">
-<h2>실수령액은 어떻게 계산되나요?</h2>
-<p>월 급여에서 국민연금(4.5%), 건강보험과 장기요양보험, 고용보험(0.9%), 그리고 근로소득 간이세액표에 따른 소득세와 지방소득세(소득세의 10%)를 공제한 금액이 실수령액입니다. 부양가족이 많을수록 소득세가 줄고, 식대 등 비과세 수당은 공제 계산에서 제외되어 실수령액이 늘어납니다.</p>
+<h2>연봉 실수령액은 어떻게 계산되나요?</h2>
+<p>연봉 실수령액은 세전 월급에서 국민연금(4.5%), 건강보험과 장기요양보험, 고용보험(0.9%), 그리고 근로소득 간이세액표에 따른 소득세와 지방소득세(소득세의 10%)를 공제한 금액입니다. 흔히 말하는 '세후 월급'이 바로 이 실수령 월급이며, 부양가족이 많을수록 소득세가 줄고, 식대 등 비과세 수당은 공제 계산에서 제외되어 실수령액이 늘어납니다.</p>
+<h2>{YEAR}년 4대보험 요율 한눈에</h2>
+<ul>
+<li>국민연금: 월 급여의 4.5% (회사와 절반씩 부담, 기준소득월액 상·하한 적용)</li>
+<li>건강보험: 보수월액에 요율을 곱해 산정, 근로자 절반 부담</li>
+<li>장기요양보험: 건강보험료에 비례해 추가로 공제</li>
+<li>고용보험: 월 급여의 0.9%</li>
+<li>소득세: 간이세액표 룩업 후 지방소득세(소득세의 10%) 추가</li>
+</ul>
+<p>정확한 세후 월급이 궁금하다면 위 계산기에 연봉을 입력하고 부양가족·자녀·비과세 식대 조건을 바꿔 보세요. 연봉별 결과는 <a href="table/index.html">연봉 실수령액표</a>에서, "월 300만 원 받으려면 연봉 얼마?" 같은 역질문은 역계산 페이지에서 확인할 수 있습니다.</p>
 <h2>자주 묻는 질문</h2>
 <dl>
 <dt>계산 결과가 실제 월급과 왜 다른가요?</dt>
 <dd>회사의 비과세 수당 구성, 상여 지급 방식, 노조비 같은 회사별 공제 때문입니다. 본 계산기는 간이세액표 100% 기준 추정치이며, 연말정산에서 최종 정산됩니다.</dd>
+<dt>세후 월급(실수령액)은 어떻게 늘리나요?</dt>
+<dd>비과세 식대(월 20만 원) 포함, 소득 요건을 충족하는 부양가족 등록, 연말정산 공제 챙기기로 세 부담을 줄이면 매달 실수령 월급이 늘어납니다.</dd>
+<dt>4대보험은 매달 얼마나 떼나요?</dt>
+<dd>국민연금 4.5%, 고용보험 0.9%에 건강보험·장기요양보험을 더해 통상 세전 월급의 9% 안팎이 공제되며, 여기에 소득세·지방소득세가 추가됩니다.</dd>
 <dt>요율은 언제 기준인가요?</dt>
 <dd>{YEAR}년 고시 요율 기준이며 출처는 가이드 페이지에 정리되어 있습니다.</dd>
 </dl>
 </section>"""
 
+    index_faq = {
+        "@context": "https://schema.org", "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": "연봉 실수령액(세후 월급)은 어떻게 계산되나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": f"세전 월급에서 국민연금 4.5%, 건강보험과 장기요양보험, 고용보험 0.9%, 그리고 간이세액표에 따른 소득세와 지방소득세(소득세의 10%)를 뺀 금액이 연봉 실수령액, 즉 세후 월급입니다. {YEAR}년 고시 요율 기준으로 계산합니다."}},
+            {"@type": "Question", "name": "세후 월급(실수령액)은 어떻게 늘리나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "비과세 식대(월 20만 원) 포함, 소득 요건을 충족하는 부양가족 등록, 연말정산 공제 항목 챙기기로 세 부담을 줄이면 매달 실수령 월급이 늘어납니다."}},
+            {"@type": "Question", "name": "4대보험은 월급에서 매달 얼마나 떼나요?",
+             "acceptedAnswer": {"@type": "Answer", "text": "국민연금 4.5%, 고용보험 0.9%에 건강보험과 장기요양보험을 더해 통상 세전 월급의 9% 안팎이 공제되며, 여기에 소득세와 지방소득세가 추가됩니다."}},
+        ],
+    }
+
     site.emit(path, shell(
-        title=f"{YEAR} 연봉 실수령액 계산기 — 부양가족·비과세 반영 | 연봉계산소",
-        desc=f"{YEAR}년 연봉 실수령액을 즉시 계산. 4대보험·간이세액표·부양가족·자녀·비과세 식대 반영. 연봉별 실수령액표와 역계산까지 무료.",
+        title=f"{YEAR} 연봉 실수령액 계산기 — 월급 실수령·4대보험·세후 | 연봉계산소",
+        desc=f"{YEAR}년 연봉 실수령액과 월급 실수령(세후 월급)을 즉시 계산. 4대보험·간이세액표·부양가족·자녀·비과세 식대 반영. 연봉별 실수령액표와 역계산까지 무료.",
         canonical=f"{SITE_URL}/", depth=0, body=body, seo_html=seo, rails=True,
-        jsonld={"@context": "https://schema.org", "@type": "WebApplication", "name": "연봉계산소",
+        jsonld=[{"@context": "https://schema.org", "@type": "WebApplication", "name": "연봉계산소",
                 "url": f"{SITE_URL}/", "applicationCategory": "FinanceApplication", "operatingSystem": "Web",
                 "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"},
-                "description": f"{YEAR}년 연봉 실수령액 계산기 — 4대보험·간이세액표 기준, 부양가족·비과세 반영"},
+                "description": f"{YEAR}년 연봉 실수령액 계산기 — 4대보험·간이세액표 기준, 부양가족·비과세 반영"}, index_faq],
         extra_script="""<script type="module">
 import { initCalculator } from './js/app.js';
 initCalculator();

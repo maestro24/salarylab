@@ -13,4 +13,7 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
+User-agent: Yeti
+Allow: /
+
 Sitemap: https://maestro24.github.io/salarylab/sitemap.xml
